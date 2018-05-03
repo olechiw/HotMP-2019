@@ -1,4 +1,4 @@
-package org.usfirst.frc.team67.robot.PathPlanning;
+package org.usfirst.frc.team67.PathPlanning;
 
 public class GyroPIDController
 {

@@ -7,28 +7,42 @@
 
 package org.usfirst.frc.team67.robot;
 
+import org.usfirst.frc.team67.PathPlanning.PathFollower;
+import org.usfirst.frc.team67.robot.paths.Paths;
+
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Joystick;
 
 public class Robot extends IterativeRobot
 {
-	private static final int LEFT = 1;
-	private static final int RIGHT = 2;
-	private static final int GYRO = 3;
+	private static final int TIMEOUT = 10;
 
-	TalonSRX talonLeft;
-	TalonSRX talonRight;
+	private TalonSRX talonLeft;
+	private TalonSRX talonRight;
+	private PigeonIMU pigeon;
+	private Joystick joy;
+
+	private PathFollower pathFollower;
 
 	@Override
 	public void robotInit()
 	{
-		talonLeft = new TalonSRX(LEFT);
-		talonLeft.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 80);
-		talonRight = new TalonSRX(RIGHT);
-		talonRight.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 80);
+		talonLeft = new TalonSRX(Constants.DRIVE_LEFT);
+		talonLeft.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, TIMEOUT);
+		talonRight = new TalonSRX(Constants.DRIVE_RIGHT);
+		talonRight.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, TIMEOUT);
 		talonRight.setSensorPhase(true);
+
+		pigeon = new PigeonIMU(Constants.GYRO);
+
+		pathFollower = new PathFollower(talonLeft, talonRight, pigeon);
+		pathFollower.SetConfig(Constants.PathFollowerConfig);
+
+		joy = new Joystick(0);
 	}
 
 	@Override
@@ -39,6 +53,8 @@ public class Robot extends IterativeRobot
 	@Override
 	public void autonomousPeriodic()
 	{
+		pathFollower.SetPath(Paths.Curve);
+		pathFollower.StartPath();
 	}
 
 	@Override
